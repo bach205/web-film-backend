@@ -19,29 +19,32 @@ import java.io.IOException;
  */
 public class SessionCheckFilter implements Filter {
 
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            // Lấy danh sách cookie
-//            Cookie[] cookies = httpRequest.getCookies();
-//
-//            if (cookies != null) {
-//                for (Cookie cookie : cookies) {
-//                    // Kiểm tra cookie theo tên
-//                    if ("sessionId".equals(cookie.getName())) {
-//                        System.out.println("Session ID: " + cookie.getValue());
-//                    }
-//                }
-//            } else {
-//                System.out.println("No cookies found!");
-//            }
-                request.setAttribute("add", "filter");
+            try {
+                //             Lấy danh sách cookie
+                Cookie[] cookies = httpRequest.getCookies();
+
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        // Kiểm tra cookie theo tên
+                        if ("sessionId".equals(cookie.getName())) {                          
+                            request.setAttribute("sessionId", cookie.getValue());
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         // Tiếp tục chain
         chain.doFilter(request, response);
     }
-    
+
 }

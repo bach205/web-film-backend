@@ -7,7 +7,6 @@ package com.huybach;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -30,7 +29,7 @@ public class AppConfig implements WebMvcConfigurer {
     public DataSource dataSource() throws ClassNotFoundException {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        dataSource.setUrl("jdbc:sqlserver://localhost:1433;databaseName=test1;encrypt=true;trustServerCertificate=true");
+        dataSource.setUrl("jdbc:sqlserver://localhost:1433;databaseName=webfilm;encrypt=true;trustServerCertificate=true");
         dataSource.setUsername("sa");
         dataSource.setPassword("123");
         return dataSource;

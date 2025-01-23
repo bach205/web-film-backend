@@ -6,6 +6,7 @@ package com.huybach.resources.Service;
 
 import com.huybach.resources.Model.Session;
 import com.huybach.resources.Service.Mapper.SessionMapper;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,11 @@ public class SessionJDBCTemplate {
         this.db = jdbcTemplate;
     }
     
-    public void create (Session session){
+    public String create (int userId){
         String query = "insert into session values (?,?)";
-        db.update(query,session.getSessionId(),session.getUserId());
+        String sessionId = UUID.randomUUID().toString();
+        db.update(query,sessionId,userId);
+        return sessionId;
     }
     
     public Session getSession(String sessionId) {
