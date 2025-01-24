@@ -43,6 +43,11 @@ public class UserJDBCTemplate {
         return result;
     }
     
+    public int updateUserPassword(String email,String password){
+        String query = "update users set password = ? where email = ?";
+        return db.update(query,password,email);
+    }
+    
     public boolean isUserExistedByEmail(String email){
         try{
             User user = getUserByEmail(email);

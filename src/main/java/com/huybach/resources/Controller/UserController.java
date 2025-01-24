@@ -34,8 +34,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/registration")
-    @ResponseBody
     public ResponseEntity<Response> registerHandle(@RequestBody User user,HttpServletResponse res) {
         return userService.registerHandle(user, res);
+    }
+    
+    @PostMapping(value = "reset-password")
+    public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user){
+        return userService.resetPasswordHandle(user);
     }
 }

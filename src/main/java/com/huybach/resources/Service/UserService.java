@@ -58,4 +58,13 @@ public class UserService {
         String sessionId = sessionDb.create(user.getId());
             res.setHeader("set-cookie", "sessionId=" + sessionId + "; Path=/; Max-Age=31536000; HttpOnly;Secure;SameSite=None");
     }
+    
+    public ResponseEntity<Response> resetPasswordHandle (User user){
+        int result = db.updateUserPassword(user.getEmail(), user.getPassword());
+        if(result>0){
+            return ResponseEntity.status(200).body(new Response(200,"Your password is update sucessfully",null));
+        }else{
+            return ResponseEntity.status(500).body(new Response(500,"Email is not existed",null));
+        }
+    }
 }
