@@ -7,6 +7,7 @@ package com.huybach.resources.Service;
 import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.Mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class UserJDBCTemplate {
     }
     
     
-    public void createUser(User user){
+    public void createUser(User user) throws DataIntegrityViolationException{
         String query = "insert into user values (?,?,?,?,?)";
         db.update(query,user.getEmail(),user.getPassword(),user.getFirstName(),user.getLastName(),user.getGender());
     }

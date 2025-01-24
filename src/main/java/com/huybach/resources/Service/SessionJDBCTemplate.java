@@ -8,6 +8,7 @@ import com.huybach.resources.Model.Session;
 import com.huybach.resources.Service.Mapper.SessionMapper;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class SessionJDBCTemplate {
         return sessionId;
     }
     
-    public Session getSession(String sessionId) {
+    public Session getSession(String sessionId) throws EmptyResultDataAccessException {
         String query = "select * from session where sessionId = ?";
         Session session = (Session) db.queryForObject(query, new Object[]{sessionId}, new SessionMapper() );
         return session;
