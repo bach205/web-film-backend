@@ -1,2 +1,16 @@
+com\huybach\resources\Service\repo\UserJDBCTemplate.class
 com\huybach\resources\JakartaEE10Resource.class
+com\huybach\AppConfig.class
+com\huybach\resources\Controller\UserController.class
+com\huybach\resources\Model\Response.class
+com\huybach\resources\Model\Session.class
+com\huybach\resources\Service\repo\SessionJDBCTemplate.class
+com\huybach\resources\Service\UserService.class
+com\huybach\resources\Model\User.class
+com\huybach\resources\Service\Mapper\SessionMapper.class
+com\huybach\ServletInitializer.class
+com\huybach\resources\Service\SessionService.class
+com\huybach\resources\Service\Mapper\UserMapper.class
+com\huybach\resources\Controller\SessionController.class
+com\huybach\filter\SessionCheckFilter.class
 com\huybach\JakartaRestConfiguration.class

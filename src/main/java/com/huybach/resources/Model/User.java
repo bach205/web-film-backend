@@ -15,16 +15,26 @@ public class User {
     private String email;
     private int gender;
     private String password;
+    private String address;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, int gender, String password) {
+    public User(String firstName, String lastName, String email, int gender, String password, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.gender = gender;
         this.password = password;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getId() {

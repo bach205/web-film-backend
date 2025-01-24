@@ -9,12 +9,12 @@ package com.huybach.resources.Model;
  * @author HOME PC
  */
 public class Response {
-    private int statusCode;
+    private int status;
     private String message;
     private Object data;
 
-    public Response(int statusCode, String message, Object data) {
-        this.statusCode = statusCode;
+    public Response(int status, String message, Object data) {
+        this.status = status;
         this.message = message;
         this.data = data;
     }
@@ -22,12 +22,12 @@ public class Response {
     public Response() {
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public int getStatus() {
+        return status;
     }
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getMessage() {
