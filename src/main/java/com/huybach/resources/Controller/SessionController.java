@@ -23,18 +23,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/authentication")
 public class SessionController {
 
-    @Autowired
     SessionService sessionService;
+
+    @Autowired
+    public void setSessionService(SessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 
     @PostMapping()
     public ResponseEntity<Response> getUserData(HttpServletRequest req) {
         return sessionService.getUserData(req);
     }
+
     @PostMapping(value = "/reset-session-cookie")
-    public ResponseEntity<Response> resetSessionCookie (HttpServletResponse res){
-        return   sessionService.resetSessionCookie(res);
+    public ResponseEntity<Response> resetSessionCookie(HttpServletResponse res) {
+        return sessionService.resetSessionCookie(res);
     }
-    
+
     @GetMapping()
     public String getPage() {
         return "hello";

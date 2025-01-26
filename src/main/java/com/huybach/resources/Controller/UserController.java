@@ -25,21 +25,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     UserService userService;
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping(value = "/validate")
-    public ResponseEntity<Response> loginHandle(@RequestBody User user, HttpServletRequest req, HttpServletResponse res){
+    public ResponseEntity<Response> loginHandle(@RequestBody User user, HttpServletRequest req, HttpServletResponse res) {
         return userService.loginHandle(user, req, res);
     }
 
     @PostMapping(value = "/registration")
-    public ResponseEntity<Response> registerHandle(@RequestBody User user,HttpServletResponse res) {
+    public ResponseEntity<Response> registerHandle(@RequestBody User user, HttpServletResponse res) {
         return userService.registerHandle(user, res);
     }
-    
+
     @PostMapping(value = "reset-password")
-    public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user){
+    public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user) {
         return userService.resetPasswordHandle(user);
     }
 }

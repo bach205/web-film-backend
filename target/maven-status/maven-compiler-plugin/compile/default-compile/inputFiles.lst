@@ -1,5 +1,7 @@
+E:\Java\web-film\src\main\java\com\huybach\resources\Model\Movie.java
 E:\Java\web-film\src\main\java\com\huybach\filter\SessionCheckFilter.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Controller\SessionController.java
+E:\Java\web-film\src\main\java\com\huybach\Test.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\Mapper\UserMapper.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\UserService.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\Mapper\SessionMapper.java
@@ -9,7 +11,9 @@ E:\Java\web-film\src\main\java\com\huybach\resources\Model\Session.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\repo\SessionJDBCTemplate.java
 E:\Java\web-film\src\main\java\com\huybach\JakartaRestConfiguration.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Controller\UserController.java
+E:\Java\web-film\src\main\java\com\huybach\resources\Service\Mapper\MovieMapper.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Model\User.java
+E:\Java\web-film\src\main\java\com\huybach\resources\Service\repo\MovieJDBCTemplate.java
 E:\Java\web-film\src\main\java\com\huybach\resources\JakartaEE10Resource.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\SessionService.java
 E:\Java\web-film\src\main\java\com\huybach\ServletInitializer.java

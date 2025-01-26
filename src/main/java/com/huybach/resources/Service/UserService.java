@@ -48,12 +48,13 @@ public class UserService {
         try {
             db.createUser(user);
             sendSessionId(res, user);
-            return ResponseEntity.status(200).body(new Response(200, "Create account successfully", null));
+            return ResponseEntity.status(200).body(new Response(200, "Create account successfully", user));
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(500).body(new Response(500, "The email is existed", null));
         }
     }
     
+    //gui sessionid vao cookie trong response
     public void sendSessionId (HttpServletResponse res, User user){
         String sessionId = sessionDb.create(user.getId());
             res.setHeader("set-cookie", "sessionId=" + sessionId + "; Path=/; Max-Age=31536000; HttpOnly;Secure;SameSite=None");
