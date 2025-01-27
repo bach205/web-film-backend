@@ -7,6 +7,7 @@ package com.huybach.resources.Service;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +44,21 @@ public class MovieService {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, "fail", null));
         }
+    }
+
+    public ResponseEntity<Response> loadHomePage() {
+        try {
+            List<Movie> trending = movieDb.getTrendingMovies();
+            List<Movie> latestBo = movieDb.getLatestMoviesByGenre("Phim bộ");
+            List<Movie> latestLe = movieDb.getLatestMoviesByGenre("Phim lẻ");
+            List<Object> result = new ArrayList<>();
+            result.add(trending);
+            result.add(latestBo);
+            result.add(latestLe);
+            return ResponseEntity.status(200).body(new Response(200, "load successfully", null,result));
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, "load failed", null));
+        }
+
     }
 }

@@ -42,8 +42,13 @@ public class UserController {
         return userService.registerHandle(user, res);
     }
 
-    @PostMapping(value = "reset-password")
+    @PostMapping(value = "/reset-password")
     public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user) {
         return userService.resetPasswordHandle(user);
+    }
+    
+    @PostMapping(value = "/update-info-except-password")
+    public ResponseEntity<Response> updateInformationExceptPassword(@RequestBody User user){
+        return userService.updateUserInformation(user);
     }
 }

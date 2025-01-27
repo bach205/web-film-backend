@@ -21,12 +21,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SessionService {
+
     @Autowired
     com.huybach.resources.Service.repo.SessionJDBCTemplate db;
 
     @Autowired
     UserJDBCTemplate userDb;
-    
+
     public ResponseEntity<Response> getUserData(HttpServletRequest req) {
         String sessionId = (String) req.getAttribute("sessionId");
         try {
@@ -40,11 +41,13 @@ public class SessionService {
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(402).body(new Response(402, "what are you looking for", null));
 
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
         }
     }
-    
-    public ResponseEntity<Response> resetSessionCookie (HttpServletResponse res){
-            res.setHeader("set-cookie", "sessionId =;HttpOnly;Secure;SameSite=None;Path =/; max-age = 0");
+
+    public ResponseEntity<Response> resetSessionCookie(HttpServletResponse res) {
+        res.setHeader("set-cookie", "sessionId =;HttpOnly;Secure;SameSite=None;Path =/; max-age = 0");
         return ResponseEntity.status(200).build();
     }
 }

@@ -27,8 +27,8 @@ public class UserJDBCTemplate {
     
     
     public void createUser(User user) throws DataIntegrityViolationException{
-        String query = "insert into users values (?,?,?,?,?,?)";
-        db.update(query,user.getEmail(),user.getPassword(),user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress());
+        String query = "insert into users values (?,?,?,?,?,?,?)";
+        db.update(query,user.getEmail(),user.getPassword(),user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress(),user.getRole());
     }
     
     public User getUserByEmail(String email) throws EmptyResultDataAccessException{
@@ -55,5 +55,9 @@ public class UserJDBCTemplate {
         }catch(EmptyResultDataAccessException e){
             return false;
         }
+    }
+    public int updateUserInformationExceptPassword (User user){
+        String query = "update users set firstName = ?, lastName = ?, gender = ?, address= ?";
+        return db.update(query,user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress());     
     }
 }

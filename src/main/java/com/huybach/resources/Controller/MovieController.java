@@ -39,4 +39,9 @@ public class MovieController {
     public ResponseEntity<Response> getLatestMoviesByGenre (@RequestBody String genre){
         return movieService.getLatestMoviesByGenre(genre);
     }
+    
+    @PostMapping (value = "/load-trending-latest")
+    public ResponseEntity<Response> loadHomePage(){
+        return movieService.loadHomePage();
+    }
 }

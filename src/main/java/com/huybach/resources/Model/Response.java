@@ -4,6 +4,8 @@
  */
 package com.huybach.resources.Model;
 
+import java.util.List;
+
 /**
  *
  * @author HOME PC
@@ -12,12 +14,38 @@ public class Response {
     private int status;
     private String message;
     private Object data;
+    private List<Object> listData;
+
+    public Response(int status, String message, Object data, List<Object> listData) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.listData = listData;
+    }
 
     public Response(int status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
+
+    public Response(int status, String message, List<Object> listData) {
+        this.status = status;
+        this.message = message;
+        this.listData = listData;
+    }
+    
+    
+
+    public List<Object> getListData() {
+        return listData;
+    }
+
+    public void setListData(List<Object> listData) {
+        this.listData = listData;
+    }
+
+    
 
     public Response() {
     }

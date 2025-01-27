@@ -9,7 +9,6 @@ import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.repo.UserJDBCTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,6 +40,8 @@ public class UserService {
             }
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(500).body(new Response(500, "Email is not existed", null));
+        } catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
         }
     }
     
@@ -51,6 +52,8 @@ public class UserService {
             return ResponseEntity.status(200).body(new Response(200, "Create account successfully", user));
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(500).body(new Response(500, "The email is existed", null));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
         }
     }
     
@@ -63,9 +66,24 @@ public class UserService {
     public ResponseEntity<Response> resetPasswordHandle (User user){
         int result = db.updateUserPassword(user.getEmail(), user.getPassword());
         if(result>0){
-            return ResponseEntity.status(200).body(new Response(200,"Your password is update sucessfully",null));
+            return ResponseEntity.status(200).body(new Response(200,"Your password is updated sucessfully",null));
         }else{
             return ResponseEntity.status(500).body(new Response(500,"Email is not existed",null));
+        }
+    }
+    
+    public ResponseEntity<Response> updateUserInformation(User user){      
+        try{
+            int result = db.updateUserInformationExceptPassword(user);
+        if(result>0){
+            return ResponseEntity.status(200).body(new Response(200,"Your information is updated sucessfully",null));
+        }else{
+            return ResponseEntity.status(500).body(new Response(500,"can not update",null));
+        }
+        }catch(DataIntegrityViolationException e){
+            return ResponseEntity.status(500).body(new Response(500,"Email is existed",null));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,"Loi khong xac dinh",null));
         }
     }
 }

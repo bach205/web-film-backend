@@ -28,7 +28,7 @@ public class MovieJDBCTemplate {
     }
     
     public List<Movie> getLatestMoviesByGenre(String genre){
-        String query ="select a.* from movies a join episodes b on a.id = b.movieId where a.genre = N'"+genre+"' order by b.createAt desc";
+        String query ="select a.* from movies a join (select movieId,max(createAt) as createAt from episodes group by movieId) as b on a.id = b.movieId where a.genre = N'"+genre+"' order by b.createAt desc";
         return db.query(query,new MovieMapper());
     }
 }

@@ -16,19 +16,31 @@ public class User {
     private int gender;
     private String password;
     private String address;
+    private int role;
 
     public User() {
+        this.role = 0;
     }
 
-    public User(String firstName, String lastName, String email, int gender, String password, String address) {
+    public User(String firstName, String lastName, String email, int gender, String password, String address,int role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.gender = gender;
         this.password = password;
         this.address = address;
+        this.role=role;
     }
 
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+    
+    
     public String getAddress() {
         return address;
     }
