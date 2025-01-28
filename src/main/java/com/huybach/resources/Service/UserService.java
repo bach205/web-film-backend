@@ -108,4 +108,18 @@ public class UserService {
             return ResponseEntity.status(200).body(new Response(200,e.getMessage()));
         }
     }
+    
+    public ResponseEntity<Response> updateUserByAdmin(User user){
+        try{
+            int result = db.updateUserByAdmin(user);
+            if(result > 0 ){
+                return ResponseEntity.status(200).body(new Response(200,"update successfully"));
+            }else{
+                return ResponseEntity.status(500).body(new Response(200,"update failed"));
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(200).body(new Response(200,e.getMessage()));
+        }
+        
+    }
 }

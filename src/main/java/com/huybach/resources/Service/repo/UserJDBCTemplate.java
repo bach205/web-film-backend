@@ -57,6 +57,7 @@ public class UserJDBCTemplate {
             return false;
         }
     }
+    //khong update (email,password,role)
     public int updateUserInformationExceptPassword (User user){
         String query = "update users set firstName = ?, lastName = ?, gender = ?, address= ? where id = ?";
         return db.update(query,user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress(),user.getId());     
@@ -70,5 +71,10 @@ public class UserJDBCTemplate {
     public int deleteUserById(int userId) {
         String query = "delete from users where id = ?";
         return db.update(query,userId);
+    }
+    //khong update (email,password)
+    public int updateUserByAdmin(User user){
+        String query = "update users set firstName = ?, lastName=?,gender =?,address = ?,role=? where id =?";
+        return db.update(query,user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress(),user.getRole(),user.getId());
     }
 }

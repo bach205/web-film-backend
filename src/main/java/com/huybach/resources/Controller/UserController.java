@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user) {
         return userService.resetPasswordHandle(user);
     }
-    
+    //khong update(email,password,role)
     @PostMapping(value = "/update-info-except-password")
     public ResponseEntity<Response> updateInformationExceptPassword(@RequestBody User user){
         return userService.updateUserInformation(user);
@@ -61,5 +61,10 @@ public class UserController {
     @PostMapping(value ="/delete-user/{id}")
     public ResponseEntity<Response> deleteUserById(@PathVariable int id){
         return userService.deleteUserById(id);
+    }
+    //khong update(email,password)
+    @PostMapping(value = "/update-by-admin")
+    public ResponseEntity<Response> updateUserByAdmin(@RequestBody User user){
+        return userService.updateUserByAdmin(user);
     }
 }
