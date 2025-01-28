@@ -32,7 +32,7 @@ public class MovieService {
             List<Movie> result = movieDb.getTrendingMovies();
             return ResponseEntity.status(200).body(new Response(200, "trending movies", result));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(500, "fail", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
 
@@ -42,7 +42,7 @@ public class MovieService {
             System.out.println(result.size());
             return ResponseEntity.status(200).body(new Response(200, "latest movies by genre", result));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(500, "fail", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
 
@@ -57,7 +57,7 @@ public class MovieService {
             result.add(latestLe);
             return ResponseEntity.status(200).body(new Response(200, "load successfully", null,result));
         }catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(500, "load failed", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
 
     }

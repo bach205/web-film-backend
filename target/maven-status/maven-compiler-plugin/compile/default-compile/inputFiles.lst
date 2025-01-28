@@ -1,8 +1,10 @@
 E:\Java\web-film\src\main\java\com\huybach\resources\Model\Movie.java
 E:\Java\web-film\src\main\java\com\huybach\filter\SessionCheckFilter.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Controller\SessionController.java
+E:\Java\web-film\src\main\java\com\huybach\resources\Service\MovieService.java
 E:\Java\web-film\src\main\java\com\huybach\Test.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\Mapper\UserMapper.java
+E:\Java\web-film\src\main\java\com\huybach\resources\Controller\MovieController.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\UserService.java
 E:\Java\web-film\src\main\java\com\huybach\resources\Service\Mapper\SessionMapper.java
 E:\Java\web-film\src\main\java\com\huybach\AppConfig.java

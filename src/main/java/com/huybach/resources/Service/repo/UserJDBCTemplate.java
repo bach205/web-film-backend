@@ -6,6 +6,7 @@ package com.huybach.resources.Service.repo;
 
 import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.Mapper.UserMapper;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -57,7 +58,17 @@ public class UserJDBCTemplate {
         }
     }
     public int updateUserInformationExceptPassword (User user){
-        String query = "update users set firstName = ?, lastName = ?, gender = ?, address= ?";
-        return db.update(query,user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress());     
+        String query = "update users set firstName = ?, lastName = ?, gender = ?, address= ? where id = ?";
+        return db.update(query,user.getFirstName(),user.getLastName(),user.getGender(),user.getAddress(),user.getId());     
+    }
+    
+    public List<User> getAllUser(){
+        String query = "select * from users";
+        return db.query(query,new UserMapper());       
+    }
+        
+    public int deleteUserById(int userId) {
+        String query = "delete from users where id = ?";
+        return db.update(query,userId);
     }
 }

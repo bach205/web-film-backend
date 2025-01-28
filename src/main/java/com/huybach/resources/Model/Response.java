@@ -23,6 +23,13 @@ public class Response {
         this.listData = listData;
     }
 
+    public Response(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+        
+    
     public Response(int status, String message, Object data) {
         this.status = status;
         this.message = message;

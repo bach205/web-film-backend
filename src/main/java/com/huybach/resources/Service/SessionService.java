@@ -42,7 +42,7 @@ public class SessionService {
             return ResponseEntity.status(402).body(new Response(402, "what are you looking for", null));
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
 

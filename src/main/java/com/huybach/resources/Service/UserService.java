@@ -9,6 +9,7 @@ import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.repo.UserJDBCTemplate;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,7 +42,7 @@ public class UserService {
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(500).body(new Response(500, "Email is not existed", null));
         } catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
     
@@ -53,7 +54,7 @@ public class UserService {
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(500).body(new Response(500, "The email is existed", null));
         }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500, "loi khong xac dinh", null));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
     
@@ -83,7 +84,28 @@ public class UserService {
         }catch(DataIntegrityViolationException e){
             return ResponseEntity.status(500).body(new Response(500,"Email is existed",null));
         }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500,"Loi khong xac dinh",null));
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+        }
+    }
+    public ResponseEntity<Response> getAllUser (){
+        try{
+            List<User> result = db.getAllUser();
+            return ResponseEntity.status(200).body(new Response(200,"load all user successfully",result));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,"load all user failed",null));
+        }
+    }
+    
+    public ResponseEntity<Response> deleteUserById(int userId){
+        try{
+            int result = db.deleteUserById(userId);
+            if(result > 0 ){
+                return ResponseEntity.status(200).body(new Response(200,"delete successfully"));
+            }else{
+                return ResponseEntity.status(500).body(new Response(200,"delete failed"));
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(200).body(new Response(200,e.getMessage()));
         }
     }
 }
