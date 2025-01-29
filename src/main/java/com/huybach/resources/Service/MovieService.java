@@ -4,9 +4,11 @@
  */
 package com.huybach.resources.Service;
 
+import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +62,40 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
 
+    }
+    public ResponseEntity<Response> getEpisodeData(String movieTitle,long episode){
+        Episode result;
+        try{
+            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle);
+            List<String> genre = movieDb.getMovieGenre(movieTitle);
+            long episodeView = movieDb.getEpisodeView(movieTitle, episode);
+            if(episodeView == -1){
+                return ResponseEntity.status(500).body(new Response(500,"sai trong cau lenh sql lay view",null));
+            }
+            result.setGenre(genre);
+            result.setView(episodeView);
+            return ResponseEntity.status(200).body(new Response(200,"load successfully",result));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+        }
+    }
+    
+    public ResponseEntity<Response> updateEpisodeView(long movieId,int episode){
+        try{
+             Timestamp version =movieDb.getEpisodeVersionUpdateView(movieId, episode);
+             int retry = 0;
+             while(retry<5){
+                 int result = movieDb.updateEpisodeView(movieId, episode, version);
+                 if(result == 1){
+                     return ResponseEntity.status(200).body(new Response(200,"ok",null));
+                 }else{
+                     retry+=1;
+                 }              
+             }
+             throw new Exception("qua tai server roi.......");
+             
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+        }
     }
 }
