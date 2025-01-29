@@ -81,21 +81,28 @@ public class MovieService {
     }
     
     public ResponseEntity<Response> updateEpisodeView(long movieId,int episode){
-        try{
-             Timestamp version =movieDb.getEpisodeVersionUpdateView(movieId, episode);
+        Timestamp version=null;
+        try{ 
+            
              int retry = 0;
              while(retry<5){
+                  version =movieDb.getEpisodeVersionUpdateView(movieId, episode);
+                  System.out.println(movieId);
+                  System.out.println(episode);
+                  System.out.println(version);
                  int result = movieDb.updateEpisodeView(movieId, episode, version);
+                 System.out.println(result);
                  if(result == 1){
                      return ResponseEntity.status(200).body(new Response(200,"ok",null));
                  }else{
+                     Thread.sleep(100);
                      retry+=1;
                  }              
              }
              throw new Exception("qua tai server roi.......");
              
         }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),version));
         }
     }
 }

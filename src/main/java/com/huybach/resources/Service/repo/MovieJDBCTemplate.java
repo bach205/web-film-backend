@@ -81,8 +81,9 @@ public class MovieJDBCTemplate {
                 }
             });     
     }
+    //convert vi trong sql version type dateTime luu den ca milis,trong khi java chi luu den s ma thoi
     public int updateEpisodeView(long movieId,int episode,Timestamp version){
-        String query = "update episodes set [view] = [view] +1, version = CURRENT_TIMESTAMP where version = ? and movieId = ? and episode = ?";
+        String query = "update episodes set [view] = [view] +1, version = CURRENT_TIMESTAMP where CONVERT(VARCHAR, version, 120) = CONVERT(VARCHAR, ?, 120) and movieId = ? and episode = ?";
         return db.update(query,new Object[]{version,movieId,episode});
     }
 }
