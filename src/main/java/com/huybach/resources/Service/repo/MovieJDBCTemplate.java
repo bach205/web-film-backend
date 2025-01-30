@@ -8,6 +8,7 @@ import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Service.Mapper.EpisodeMapper;
 import com.huybach.resources.Service.Mapper.MovieMapper;
+import com.huybach.resources.Service.Mapper.SearchMapper;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class MovieJDBCTemplate {
     JdbcTemplate db;
 
     public List<Movie> getTrendingMovies() {
-        String query = "select * from movies where id in (select top 5 movieId from (select movieId,sum([view]) as [view] \n"
+        String query = "select * from movies where id in (select top 12 movieId from (select movieId,sum([view]) as [view] \n"
                 + "from episodes group by movieId) as countView order by [view] desc)";
         return db.query(query, new MovieMapper());
     }
@@ -73,17 +74,37 @@ public class MovieJDBCTemplate {
 
     public Timestamp getEpisodeVersionUpdateView(long movieId, int episode) throws Exception {
         String query = "select version from episodes where movieId = ? and episode = ?";
-            return db.query(query, new Object[]{movieId, episode}, (rs) -> {
-                if (rs.next()) {
-                    return rs.getTimestamp("version");
-                }else {
-                    return null;
-                }
-            });     
+        return db.query(query, new Object[]{movieId, episode}, (rs) -> {
+            if (rs.next()) {
+                return rs.getTimestamp("version");
+            } else {
+                return null;
+            }
+        });
     }
+
     //convert vi trong sql version type dateTime luu den ca milis,trong khi java chi luu den s ma thoi
-    public int updateEpisodeView(long movieId,int episode,Timestamp version){
+    public int updateEpisodeView(long movieId, int episode, Timestamp version) {
         String query = "update episodes set [view] = [view] +1, version = CURRENT_TIMESTAMP where CONVERT(VARCHAR, version, 120) = CONVERT(VARCHAR, ?, 120) and movieId = ? and episode = ?";
-        return db.update(query,new Object[]{version,movieId,episode});
+        return db.update(query, new Object[]{version, movieId, episode});
+    }
+
+    public List<Movie> getMovieByRelativeGenre(String genre) {
+        String query = "select * from movies where id in (select Top 12 a.movieId from movies_genres a "
+                + "join genres b on a.genreId = b.id "
+                + "where b.name in ("+ genre +") "
+                + "group by a.movieId "
+                + "order by count(b.name) desc)";
+        return db.query(query,new MovieMapper());
+    }
+    
+    public List<Episode> searchMovie(String extraQuery){
+        String query = "select sub.*,sum([view]) as [view] from (select a.* from movies a "
+                + " join movies_genres b on a.id = b.movieId "
+                + " join genres c on b.genreId = c.id "
+                + ""+extraQuery+" ) as sub "
+                + " join episodes b on b.movieId = sub.id "
+                + " group by sub.id,sub.title,sub.description,sub.category,sub.releaseDate,sub.country,sub.imageURL";
+        return db.query(query,new SearchMapper());
     }
 }
