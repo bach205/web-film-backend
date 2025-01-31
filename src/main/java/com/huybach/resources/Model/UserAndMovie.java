@@ -8,24 +8,16 @@ package com.huybach.resources.Model;
  *
  * @author HOME PC
  */
-public class Session {
-    private String sessionId;
+public class UserAndMovie {
     private long userId;
+    private long movieId;
 
-    public Session() {
+    public UserAndMovie() {
     }
 
-    public Session(String sessionId, int userId) {
-        this.sessionId = sessionId;
+    public UserAndMovie(long userId, long movieId) {
         this.userId = userId;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+        this.movieId = movieId;
     }
 
     public long getUserId() {
@@ -35,6 +27,13 @@ public class Session {
     public void setUserId(long userId) {
         this.userId = userId;
     }
-    
+
+    public long getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
+    }
     
 }

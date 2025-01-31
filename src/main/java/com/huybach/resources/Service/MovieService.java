@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +39,10 @@ public class MovieService {
         }
     }
 
-    public ResponseEntity<Response> getLatestMoviesByGenre(String genre) {
+    public ResponseEntity<Response> getLatestMoviesByCategory(String category) {
         try {
-            List<Movie> result = movieDb.getLatestMoviesByGenre(genre);
-            return ResponseEntity.status(200).body(new Response(200, "latest movies by genre", result));
+            List<Movie> result = movieDb.getLatestMoviesByCategory(category);
+            return ResponseEntity.status(200).body(new Response(200, "ok latest movies by category", result));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
@@ -50,8 +51,8 @@ public class MovieService {
     public ResponseEntity<Response> loadHomePage() {
         try {
             List<Movie> trending = movieDb.getTrendingMovies();
-            List<Movie> latestBo = movieDb.getLatestMoviesByGenre("Phim bộ");
-            List<Movie> latestLe = movieDb.getLatestMoviesByGenre("Phim lẻ");
+            List<Movie> latestBo = movieDb.getLatestMoviesByCategory("Phim bộ");
+            List<Movie> latestLe = movieDb.getLatestMoviesByCategory("Phim lẻ");
             List<Object> result = new ArrayList<>();
             result.add(trending);
             result.add(latestBo);
@@ -66,7 +67,7 @@ public class MovieService {
     public ResponseEntity<Response> getEpisodeData(String movieTitle, long episode) {
         Episode result;
         try {
-            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle);
+            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle,episode);
             List<String> genre = movieDb.getMovieGenre(movieTitle);
             String genreQuery = "";
             for (String string : genre) {
@@ -129,51 +130,81 @@ public class MovieService {
             }
             extraTitle = extraTitle.substring(0, extraTitle.length() - 3);
         }
-        extraQuery+=extraTitle;
-        
-        if(!genre.isBlank()){
-            if(!extraQuery.isBlank()){
-                extraGenre+=" and ";
+        extraQuery += extraTitle;
+
+        if (!genre.isBlank()) {
+            if (!extraQuery.isBlank()) {
+                extraGenre += " and ";
             }
-            extraGenre+= " c.name = N'"+genre+"' ";
+            extraGenre += " c.name = N'" + genre + "' ";
         }
-        extraQuery+=extraGenre;
-        if(!country.isBlank()){
-            if(!extraCountry.isBlank()){
-                extraCountry+=" and ";
+        extraQuery += extraGenre;
+        if (!country.isBlank()) {
+            if (!extraQuery.isBlank()) {
+                extraCountry += " and ";
             }
-            extraCountry+= " a.country = N'"+country+"' ";
+            extraCountry += " a.country = N'" + country + "' ";
         }
-        extraQuery+=extraCountry;
-        if(releaseDate!=0){
-            if(!extraQuery.isBlank()){
-                extraReleaseDate+=" and ";
+        extraQuery += extraCountry;
+        if (releaseDate != 0) {
+            if (!extraQuery.isBlank()) {
+                extraReleaseDate += " and ";
             }
-            extraReleaseDate+=" a.releaseDate ";
-            if(releaseDate>0){
-                extraReleaseDate+=" = " +releaseDate+" ";
-            }else{
-                extraReleaseDate+=" < 2007 ";
+            extraReleaseDate += " a.releaseDate ";
+            if (releaseDate > 0) {
+                extraReleaseDate += " = " + releaseDate + " ";
+            } else {
+                extraReleaseDate += " < 2007 ";
             }
         }
-        extraQuery+=extraReleaseDate;
-        if(!extraCategory.isBlank()){
-            if(!extraQuery.isBlank()){
-                extraCategory+=" and ";
+        extraQuery += extraReleaseDate;
+        if (!category.isBlank()) {
+            if (!extraQuery.isBlank()) {
+                extraCategory += " and ";
             }
-            extraCategory+=" a.category = N'"+category+"' ";
+            extraCategory += " a.category = N'" + category + "' ";
         }
-        extraQuery+=extraCategory;
-        
-        if (!extraQuery.isBlank()){
-            extraQuery= " where " + extraQuery;
+        extraQuery += extraCategory;
+
+        if (!extraQuery.isBlank()) {
+            extraQuery = " where " + extraQuery;
         }
-        try{
+        try {
             List<Episode> result = movieDb.searchMovie(extraQuery);
-            return ResponseEntity.status(200).body(new Response(200,"search successfully",result));
+            return ResponseEntity.status(200).body(new Response(200, "search successfully", result));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
+        }
+
+    }
+
+    public ResponseEntity<Response> addToWatchLater(long userId, long movieId) {
+        try {
+            movieDb.addInWatchLater(userId, movieId);
+            return ResponseEntity.status(200).body(new Response(200, "successfully"));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(409).body(new Response(409, "Phim đã ở trong watch later list!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+    }
+    
+    public ResponseEntity<Response> getWatchList(long userId){
+        try{
+            List<Episode> result = movieDb.getWatchLaterList(userId);
+            
+            return ResponseEntity.status(200).body(new Response(200,"ok",result));
         }catch(Exception e){
             return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
         }
-        
+    }
+    
+    public ResponseEntity<Response> deleteFromWatchLaterList(long userId,long movieId){
+        try{
+            movieDb.deleteFromWatchLaterList(userId, movieId);
+            return ResponseEntity.status(200).body(new Response(200,"ok"));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage()));
+        }
     }
 }

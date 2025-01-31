@@ -30,7 +30,7 @@ public class SessionController {
         this.sessionService = sessionService;
     }
 
-    @PostMapping()
+    @GetMapping()
     public ResponseEntity<Response> getUserData(HttpServletRequest req) {
         return sessionService.getUserData(req);
     }
@@ -40,7 +40,7 @@ public class SessionController {
         return sessionService.resetSessionCookie(res);
     }
 
-    @GetMapping()
+    @GetMapping(value ="/test")
     public String getPage() {
         return "hello";
     }

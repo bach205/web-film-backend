@@ -7,6 +7,7 @@ package com.huybach.resources.Controller;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.MovieIdAndEpisode;
 import com.huybach.resources.Model.Response;
+import com.huybach.resources.Model.UserAndMovie;
 import com.huybach.resources.Service.MovieService;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
 import java.util.List;
@@ -34,14 +35,14 @@ public class MovieController {
         this.movieService = movieService;
     }
     
-    @PostMapping(value = "/get-trending-movies")
+    @GetMapping(value = "/get-trending-movies")
     public ResponseEntity<Response> getTrendingMovies (){
         return movieService.getTrendingMovies();
     }
     
-    @PostMapping(value = "/get-latest-movies-by-genre")
-    public ResponseEntity<Response> getLatestMoviesByGenre (@RequestBody String genre){
-        return movieService.getLatestMoviesByGenre(genre);
+    @GetMapping(value = "/get-latest-movies-by-genre")
+    public ResponseEntity<Response> getLatestMoviesByCategory (@RequestBody String category){
+        return movieService.getLatestMoviesByCategory(category);
     }
     
     @GetMapping (value = "/load-homepage")
@@ -61,5 +62,20 @@ public class MovieController {
     @GetMapping(value = "/search")
     public ResponseEntity<Response> searchMovie(@RequestParam String title,@RequestParam String genre,@RequestParam String country,@RequestParam int releaseDate,@RequestParam String category){
         return movieService.searchMovie(title, genre, country, releaseDate, category);
+    }
+    
+    @PostMapping(value = "/add-to-watchlater")
+    public ResponseEntity<Response> addToWatchLater(@RequestBody UserAndMovie req){
+        return movieService.addToWatchLater(req.getUserId(), req.getMovieId());
+    }
+    
+    @GetMapping(value = "/load-watchlater")
+    public ResponseEntity<Response> getWatchLaterList (@RequestParam long userId){
+        return movieService.getWatchList(userId);
+    }
+    
+    @PostMapping(value = "/delete-watchlater")
+    public ResponseEntity<Response> deleteFromWatchLaterList(@RequestBody UserAndMovie req){
+        return movieService.deleteFromWatchLaterList(req.getUserId(), req.getMovieId());
     }
 }

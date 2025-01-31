@@ -38,7 +38,7 @@ public class UserJDBCTemplate {
         return result;
     }
     
-    public User getUserById(int id) throws EmptyResultDataAccessException{
+    public User getUserById(long id) throws EmptyResultDataAccessException{
         String query = "select * from users where id = ?";
         User result = (User) db.queryForObject(query, new Object[]{id},new UserMapper());
         return result;
@@ -68,7 +68,7 @@ public class UserJDBCTemplate {
         return db.query(query,new UserMapper());       
     }
         
-    public int deleteUserById(int userId) {
+    public int deleteUserById(long userId) {
         String query = "delete from users where id = ?";
         return db.update(query,userId);
     }

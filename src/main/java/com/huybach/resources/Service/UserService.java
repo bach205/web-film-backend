@@ -96,7 +96,7 @@ public class UserService {
         }
     }
     
-    public ResponseEntity<Response> deleteUserById(int userId){
+    public ResponseEntity<Response> deleteUserById(long userId){
         try{
             int result = db.deleteUserById(userId);
             if(result > 0 ){

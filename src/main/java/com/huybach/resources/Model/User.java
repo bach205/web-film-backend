@@ -9,7 +9,7 @@ package com.huybach.resources.Model;
  * @author HOME PC
  */
 public class User {
-    private int id;
+    private long id;
     private String firstName;
     private String lastName;
     private String email;
@@ -49,11 +49,11 @@ public class User {
         this.address = address;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -20,9 +20,10 @@ public class Episode {
     private String imageURL;
     private int totalEpisode;
     private long view;
+    private String videoURL;
     List<String> genre;
 
-    public Episode(long movieId, String title, String description, String category, int releaseDate, String country, String imageURL, int totalEpisode, long view, List<String> genre) {
+    public Episode(long movieId, String title, String description, String category, int releaseDate, String country, String imageURL, int totalEpisode, long view,String videoURL, List<String> genre) {
         this.movieId = movieId;
         this.title = title;
         this.description = description;
@@ -33,9 +34,18 @@ public class Episode {
         this.totalEpisode = totalEpisode;
         this.view = view;
         this.genre = genre;
+        this.videoURL = videoURL;
     }
 
     public Episode() {
+    }
+
+    public String getVideoURL() {
+        return videoURL;
+    }
+
+    public void setVideoURL(String videoURL) {
+        this.videoURL = videoURL;
     }
 
     

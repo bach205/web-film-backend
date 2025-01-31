@@ -7,6 +7,8 @@ package com.huybach.resources.Service.repo;
 import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Service.Mapper.EpisodeMapper;
+import com.huybach.resources.Service.Mapper.EpisodeWithoutGenreViewMapper;
+import com.huybach.resources.Service.Mapper.EpisodeWithoutViewGenreVideoURLMapper;
 import com.huybach.resources.Service.Mapper.MovieMapper;
 import com.huybach.resources.Service.Mapper.SearchMapper;
 import java.sql.Timestamp;
@@ -32,7 +34,7 @@ public class MovieJDBCTemplate {
         return db.query(query, new MovieMapper());
     }
 
-    public List<Movie> getLatestMoviesByGenre(String category) {
+    public List<Movie> getLatestMoviesByCategory(String category) {
         String query = "select a.* from movies a join (select movieId,max(createAt) as createAt from episodes group by movieId) as b on a.id = b.movieId where a.category = N'" + category + "' order by b.createAt desc";
         return db.query(query, new MovieMapper());
     }
@@ -64,12 +66,14 @@ public class MovieJDBCTemplate {
         });
     }
 
-    public Episode getMovieAttributeWithTotalEpisode(String movieTitle) {
-        String query = "select a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL,count(b.movieId) as totalEpisode from movies a "
+    public Episode getMovieAttributeWithTotalEpisode(String movieTitle,long episode) {
+        String subQuery = "select a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL,count(b.movieId) as totalEpisode from movies a "
                 + "join episodes b on a.id = b.movieId "
                 + "where a.title = ? "
                 + "group by a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL ";
-        return (Episode) db.queryForObject(query, new String[]{movieTitle}, new EpisodeMapper());
+        String query = "select sub.*,b.videoURL from (" +subQuery+ ") as sub join episodes b on b.movieId = sub.id "
+                + " where episode = ?";
+        return (Episode) db.queryForObject(query, new Object[]{movieTitle,episode}, new EpisodeWithoutGenreViewMapper());
     }
 
     public Timestamp getEpisodeVersionUpdateView(long movieId, int episode) throws Exception {
@@ -92,19 +96,40 @@ public class MovieJDBCTemplate {
     public List<Movie> getMovieByRelativeGenre(String genre) {
         String query = "select * from movies where id in (select Top 12 a.movieId from movies_genres a "
                 + "join genres b on a.genreId = b.id "
-                + "where b.name in ("+ genre +") "
+                + "where b.name in (" + genre + ") "
                 + "group by a.movieId "
                 + "order by count(b.name) desc)";
-        return db.query(query,new MovieMapper());
+        return db.query(query, new MovieMapper());
     }
-    
-    public List<Episode> searchMovie(String extraQuery){
+
+    public List<Episode> searchMovie(String extraQuery) {
         String query = "select sub.*,sum([view]) as [view] from (select a.* from movies a "
                 + " join movies_genres b on a.id = b.movieId "
                 + " join genres c on b.genreId = c.id "
-                + ""+extraQuery+" ) as sub "
+                + "" + extraQuery + " ) as sub "
                 + " join episodes b on b.movieId = sub.id "
                 + " group by sub.id,sub.title,sub.description,sub.category,sub.releaseDate,sub.country,sub.imageURL";
-        return db.query(query,new SearchMapper());
+        return db.query(query, new SearchMapper());
+    }
+
+    public int addInWatchLater(long userId, long movieId) {
+        String query = "insert into watchLater values (?,?)";
+        return db.update(query, new Object[]{userId, movieId});
+    }
+    
+    //lay episode nay la thieu totalView voi list genre
+    public List<Episode> getWatchLaterList(long userId) {
+        String subQuery = "select a.* from movies a "
+                + " join watchLater b on b.movieId  = a.id "
+                + " where b.userId = ?";
+        String query = "select sub.* ,count(b.movieId) as totalEpisode,sum(b.[view]) as [view] from(" + subQuery + ")  as sub "
+                + " join episodes b on sub.id = b.movieId"
+                + " group by sub.id,sub.title,sub.description,sub.category,sub.releaseDate,sub.country,sub.imageURL";
+        return db.query(query, new Object[]{userId}, new EpisodeMapper());
+    }
+    
+    public int deleteFromWatchLaterList(long userId,long movieId){
+        String query = "delete from watchLater where userId = ? and movieId =?";
+        return db.update(query,new Object[]{userId,movieId});
     }
 }

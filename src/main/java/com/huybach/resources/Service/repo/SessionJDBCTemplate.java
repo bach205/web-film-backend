@@ -25,7 +25,7 @@ public class SessionJDBCTemplate {
         this.db = jdbcTemplate;
     }
     
-    public String create (int userId){
+    public String create (long userId){
         String query = "insert into session values (?,?)";
         String sessionId = UUID.randomUUID().toString();
         db.update(query,sessionId,userId);

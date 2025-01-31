@@ -13,8 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
  *
  * @author HOME PC
  */
-public class EpisodeMapper implements RowMapper{
-
+public class EpisodeWithoutViewGenreVideoURLMapper implements RowMapper{
     @Override
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
         Episode episode = new Episode();
@@ -26,8 +25,6 @@ public class EpisodeMapper implements RowMapper{
         episode.setReleaseDate(rs.getInt("releaseDate"));
         episode.setTitle(rs.getString("title"));
         episode.setTotalEpisode(rs.getInt("totalEpisode"));
-        episode.setView(rs.getLong("view"));
         return episode;
     }
-    
 }
