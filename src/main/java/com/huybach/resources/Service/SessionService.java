@@ -46,8 +46,17 @@ public class SessionService {
         }
     }
 
-    public ResponseEntity<Response> resetSessionCookie(HttpServletResponse res) {
-        res.setHeader("set-cookie", "sessionId =;HttpOnly;Secure;SameSite=None;Path =/; max-age = 0");
-        return ResponseEntity.status(200).build();
+    public ResponseEntity<Response> resetSessionCookie(HttpServletRequest req,HttpServletResponse res) {
+        Response result = new Response(200,"ok");
+        try{
+            db.deleteSession((String)req.getAttribute("sessionId"));
+        }catch(Exception e){
+            result.setMessage(e.getMessage());
+            result.setStatus(500);
+        }finally{
+            res.setHeader("set-cookie", "sessionId =;HttpOnly;Secure;SameSite=None;Path =/; max-age = 0");
+        }
+        
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 }

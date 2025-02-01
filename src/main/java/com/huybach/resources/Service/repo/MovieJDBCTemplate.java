@@ -28,7 +28,17 @@ public class MovieJDBCTemplate {
 
     @Autowired
     JdbcTemplate db;
-
+    
+    public long getMovieIdByTitle(String title){
+        String query = "select id from movies where title = ?";
+        return db.query(query,new Object[]{title},(rs)->{
+            if(rs.next()){
+                return rs.getLong("id");
+            }
+            return (long) -1;
+        });
+    }
+    
     public List<Movie> getTrendingMovies() {
         String query = "select * from movies where id in (select top 12 movieId from (select movieId,sum([view]) as [view]  "
                 + "from episodes group by movieId) as countView order by [view] desc)";
@@ -168,5 +178,46 @@ public class MovieJDBCTemplate {
             }
             return result;
         });
+    }
+    
+    public int addMovie(String title,String description,String category,int releaseDate,String country,String imageURL){
+        String query = "insert into movies values (?,?,?,?,?,?)";
+        return db.update(query,new Object[]{title,description,category,releaseDate,country,imageURL});
+    }
+    
+    public int addNewEpisode(long movieId,int episode,String videoURL){
+        String query = "insert into episodes (movieId,episode,videoURL) values (?,?,?)";
+        return db.update(query,new Object[]{movieId,episode,videoURL});
+    }
+    
+    //(movieId , ? ),
+    public int addMovieGenre(List<Integer> genreList,long movieId){
+        
+        String subQuery ="";
+        for(int genre : genreList){
+            subQuery+="("+movieId+","+genre+"),";
+        }
+        subQuery = subQuery.substring(0,subQuery.length()-1);
+        String query = "insert into movies_genres (movieId,genreId) values " + subQuery;
+        return db.update(query);
+    }
+    
+    public List<Integer> getGenreId(List<String> genreList){
+        String subQuery = " (";
+        for(String word : genreList){
+            subQuery+="N'"+word+"',";
+        }
+        subQuery = subQuery.substring(0,subQuery.length()-1);
+        subQuery+=") ";
+        System.out.println(subQuery);
+        String query = "select id from genres where name in "+subQuery;
+        List<Integer> result = db.query(query,(rs)->{
+            List<Integer> a = new ArrayList<>();
+            while(rs.next()){
+                a.add(rs.getInt("id"));
+            }
+            return a;
+        });
+        return result;
     }
 }

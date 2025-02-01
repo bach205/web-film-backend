@@ -8,11 +8,14 @@ import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +70,7 @@ public class MovieService {
     public ResponseEntity<Response> getEpisodeData(String movieTitle, long episode) {
         Episode result;
         try {
-            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle,episode);
+            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle, episode);
             List<String> genre = movieDb.getMovieGenre(movieTitle);
             String genreQuery = "";
             for (String string : genre) {
@@ -188,33 +191,53 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
-    
-    public ResponseEntity<Response> getWatchList(long userId){
-        try{
+
+    public ResponseEntity<Response> getWatchList(long userId) {
+        try {
             List<Episode> result = movieDb.getWatchLaterList(userId);
-            
-            return ResponseEntity.status(200).body(new Response(200,"ok",result));
-        }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+
+            return ResponseEntity.status(200).body(new Response(200, "ok", result));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
-    
-    public ResponseEntity<Response> deleteFromWatchLaterList(long userId,long movieId){
-        try{
+
+    public ResponseEntity<Response> deleteFromWatchLaterList(long userId, long movieId) {
+        try {
             movieDb.deleteFromWatchLaterList(userId, movieId);
-            return ResponseEntity.status(200).body(new Response(200,"ok"));
-        }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500,e.getMessage()));
+            return ResponseEntity.status(200).body(new Response(200, "ok"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
-    public ResponseEntity<Response> loadGeneralStatics(){
+
+    public ResponseEntity<Response> loadGeneralStatics() {
         List<Object> result = new ArrayList<>();
-        try{
+        try {
             result.add(movieDb.getTop5MostAndMinView());
             result.add(movieDb.getTotalMovieAndTotalView());
-            return ResponseEntity.status(200).body(new Response(200,"ok",result));
-        }catch(Exception e){
-            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+            return ResponseEntity.status(200).body(new Response(200, "ok", result));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
+        }
+    }
+
+    public ResponseEntity<Response> addEpisode(String title, String description, String category, int releaseDate, String country, String imageURL, int episode, String videoURL, List<String> genreList) {
+        long movieId = -1;
+        try {
+            movieId = movieDb.getMovieIdByTitle(title);
+            if (movieId == -1) {
+                movieDb.addMovie(title, description, category, releaseDate, country, imageURL);
+                movieId = movieDb.getMovieIdByTitle(title);
+                List<Integer> genreIdList = movieDb.getGenreId(genreList);
+                movieDb.addMovieGenre(genreIdList, movieId);
+            }
+            movieDb.addNewEpisode(movieId, episode, videoURL);
+            return ResponseEntity.status(200).body(new Response(200, "ok"));
+        } catch (DataAccessException e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
 }

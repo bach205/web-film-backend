@@ -49,7 +49,8 @@ public class UserService {
     public ResponseEntity<Response> registerHandle(@RequestBody User user,HttpServletResponse res) {
         try {
             db.createUser(user);
-            sendSessionId(res, user);
+            User getUser = db.getUserByEmail(user.getEmail());
+            sendSessionId(res, getUser);
             return ResponseEntity.status(200).body(new Response(200, "Create account successfully", user));
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(500).body(new Response(500, "The email is existed", null));

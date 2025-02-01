@@ -99,4 +99,21 @@ public class MovieController {
     public ResponseEntity<Response> loadGeneralStatics (){
         return movieService.loadGeneralStatics();
     }
+    
+    @PostMapping (value = "/authorization/add-movie")
+    public ResponseEntity<Response> addNewEpisode(@RequestBody List<Object> req, HttpServletRequest request){
+        if(!validate.isAuthorization(request)){
+            return validate.deniedResponse();
+        }
+        String title = (String)req.get(0);
+        String description =(String) req.get(1);
+        String category =(String) req.get(2);
+        int releaseDate = (int) req.get(3);
+        String country = (String)req.get(4);
+        String imageURL = (String)req.get(5);
+        int episode = (int)req.get(6);
+        String videoURL = (String)req.get(7);
+        List<String> genreList =(List<String>) req.get(8);
+        return movieService.addEpisode(title, description, category, releaseDate, country, imageURL, episode, videoURL, genreList);
+    }
 }

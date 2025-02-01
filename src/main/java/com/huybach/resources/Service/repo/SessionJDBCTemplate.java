@@ -42,4 +42,9 @@ public class SessionJDBCTemplate {
         Session session = (Session) db.queryForObject(query, new Object[]{sessionId}, new SessionMapper() );
         return session;
     }
+    
+    public int deleteSession(String sessionId) throws EmptyResultDataAccessException{
+        String query = "delete from session where sessionId = ?";
+        return db.update(query,new Object[]{sessionId});
+    }
 }

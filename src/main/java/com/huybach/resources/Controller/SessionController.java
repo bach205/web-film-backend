@@ -36,8 +36,8 @@ public class SessionController {
     }
 
     @PostMapping(value = "/reset-session-cookie")
-    public ResponseEntity<Response> resetSessionCookie(HttpServletResponse res) {
-        return sessionService.resetSessionCookie(res);
+    public ResponseEntity<Response> resetSessionCookie(HttpServletRequest req, HttpServletResponse res) {
+        return sessionService.resetSessionCookie(req,res);
     }
 
     @GetMapping(value ="/test")
