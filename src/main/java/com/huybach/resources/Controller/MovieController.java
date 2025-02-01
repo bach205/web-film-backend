@@ -4,12 +4,14 @@
  */
 package com.huybach.resources.Controller;
 
+import com.huybach.Validate;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.MovieIdAndEpisode;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Model.UserAndMovie;
 import com.huybach.resources.Service.MovieService;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("api/movies")
 public class MovieController {
-    MovieService movieService;
+    private MovieService movieService;
+    
+    private Validate validate;
 
+    @Autowired
+    public void setValidate(Validate validate) {
+        this.validate = validate;
+    }
+    
+    
     @Autowired
     public void setMovieService(MovieService movieService) {
         this.movieService = movieService;
@@ -69,13 +79,19 @@ public class MovieController {
         return movieService.addToWatchLater(req.getUserId(), req.getMovieId());
     }
     
-    @GetMapping(value = "/load-watchlater")
-    public ResponseEntity<Response> getWatchLaterList (@RequestParam long userId){
+    @GetMapping(value = "authorization/load-watchlater")
+    public ResponseEntity<Response> getWatchLaterList (@RequestParam long userId,HttpServletRequest req){
+        if(!validate.isAuthorization(req)){
+            return validate.deniedResponse();
+        }
         return movieService.getWatchList(userId);
     }
     
-    @PostMapping(value = "/delete-watchlater")
-    public ResponseEntity<Response> deleteFromWatchLaterList(@RequestBody UserAndMovie req){
+    @PostMapping(value = "authorization/delete-watchlater")
+    public ResponseEntity<Response> deleteFromWatchLaterList(@RequestBody UserAndMovie req,HttpServletRequest request){
+        if(!validate.isAuthorization(request)){
+            return validate.deniedResponse();
+        }
         return movieService.deleteFromWatchLaterList(req.getUserId(), req.getMovieId());
     }
 }

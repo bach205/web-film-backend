@@ -4,6 +4,7 @@
  */
 package com.huybach.resources.Controller;
 
+import com.huybach.Validate;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.UserService;
@@ -27,17 +28,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/user")
 public class UserController {
 
-    UserService userService;
+    private UserService userService;
+    private Validate validate;
 
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+    @Autowired
+    public void setValidate(Validate validate) {
+        this.validate = validate;
+    }
+    
 
     @PostMapping(value = "/validate")
     public ResponseEntity<Response> loginHandle(@RequestBody User user, HttpServletRequest req, HttpServletResponse res) {
         return userService.loginHandle(user, req, res);
     }
+    
 
     @PostMapping(value = "/registration")
     public ResponseEntity<Response> registerHandle(@RequestBody User user, HttpServletResponse res) {
@@ -54,18 +62,27 @@ public class UserController {
         return userService.updateUserInformation(user);
     }
     
-    @GetMapping(value = "/get-all")
-    public ResponseEntity<Response> getAllUser(){
+    @GetMapping(value = "/authorization/get-all")
+    public ResponseEntity<Response> getAllUser(HttpServletRequest req){
+        if(!validate.isAuthorization(req)){
+            return validate.deniedResponse();
+        }
         return userService.getAllUser();
     }
     
-    @PostMapping(value ="/delete-user/{id}")
-    public ResponseEntity<Response> deleteUserById(@PathVariable int id){
+    @PostMapping(value ="/authorization/delete-user/{id}")
+    public ResponseEntity<Response> deleteUserById(@PathVariable int id,HttpServletRequest req){
+        if(!validate.isAuthorization(req)){
+            return validate.deniedResponse();
+        }
         return userService.deleteUserById(id);
     }
     //khong update(email,password)
-    @PostMapping(value = "/update-by-admin")
-    public ResponseEntity<Response> updateUserByAdmin(@RequestBody User user){
+    @PostMapping(value = "/authorization/update-by-admin")
+    public ResponseEntity<Response> updateUserByAdmin(@RequestBody User user,HttpServletRequest req){
+        if(!validate.isAuthorization(req)){
+            return validate.deniedResponse();
+        }
         return userService.updateUserByAdmin(user);
     }
 }

@@ -21,6 +21,11 @@ public class SessionJDBCTemplate {
     @Autowired
     private JdbcTemplate db;
 
+    public SessionJDBCTemplate() {
+    }
+
+    
+    
     public SessionJDBCTemplate(JdbcTemplate jdbcTemplate) {
         this.db = jdbcTemplate;
     }

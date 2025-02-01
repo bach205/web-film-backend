@@ -22,6 +22,11 @@ public class UserJDBCTemplate {
     @Autowired
     JdbcTemplate db;
 
+    public UserJDBCTemplate() {
+    }
+
+    
+    
     public void setDb(JdbcTemplate db) {
         this.db = db;
     }

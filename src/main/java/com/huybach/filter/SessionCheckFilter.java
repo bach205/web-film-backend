@@ -28,7 +28,6 @@ public class SessionCheckFilter implements Filter {
             try {
                 //             Lấy danh sách cookie
                 Cookie[] cookies = httpRequest.getCookies();
-
                 if (cookies != null) {
                     for (Cookie cookie : cookies) {
                         // Kiểm tra cookie theo tên

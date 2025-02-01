@@ -4,6 +4,10 @@
  */
 package com.huybach;
 
+import com.huybach.filter.AuthorizationFilter;
+import com.huybach.filter.SessionCheckFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
