@@ -56,10 +56,13 @@ public class MovieService {
             List<Movie> trending = movieDb.getTrendingMovies();
             List<Movie> latestBo = movieDb.getLatestMoviesByCategory("Phim bộ");
             List<Movie> latestLe = movieDb.getLatestMoviesByCategory("Phim lẻ");
+            String extraQuery = " where c.name = N'Anime' ";
+            List<Episode> anime = movieDb.searchMovie(extraQuery);
             List<Object> result = new ArrayList<>();
             result.add(trending);
             result.add(latestBo);
             result.add(latestLe);
+            result.add(anime);
             return ResponseEntity.status(200).body(new Response(200, "load successfully", null, result));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));

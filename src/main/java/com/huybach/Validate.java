@@ -52,7 +52,17 @@ public class Validate {
             return false;
         }
     }
+    
+    public boolean isValidEmail(String email){
+         String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+         return email.matches(regex);
+    }
+    
+    public ResponseEntity<Response> deniedEmailResponse() {
+        return ResponseEntity.status(500).body(new Response(500, "your email is not right format"));
+    }
 
+    
     public ResponseEntity<Response> deniedResponse() {
         return ResponseEntity.status(403).body(new Response(403, "what are you looking for"));
     }

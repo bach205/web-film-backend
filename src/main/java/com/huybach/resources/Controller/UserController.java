@@ -35,20 +35,22 @@ public class UserController {
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+
     @Autowired
     public void setValidate(Validate validate) {
         this.validate = validate;
     }
-    
 
     @PostMapping(value = "/validate")
     public ResponseEntity<Response> loginHandle(@RequestBody User user, HttpServletRequest req, HttpServletResponse res) {
         return userService.loginHandle(user, req, res);
     }
-    
 
     @PostMapping(value = "/registration")
     public ResponseEntity<Response> registerHandle(@RequestBody User user, HttpServletResponse res) {
+        if (!validate.isValidEmail(user.getEmail())) {
+            validate.deniedEmailResponse();
+        }
         return userService.registerHandle(user, res);
     }
 
@@ -56,32 +58,40 @@ public class UserController {
     public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user) {
         return userService.resetPasswordHandle(user);
     }
+
     //khong update(email,password,role)
     @PostMapping(value = "/update-info-except-password")
-    public ResponseEntity<Response> updateInformationExceptPassword(@RequestBody User user){
+    public ResponseEntity<Response> updateInformationExceptPassword(@RequestBody User user) {
+        if (!validate.isValidEmail(user.getEmail())) {
+            validate.deniedEmailResponse();
+        }
         return userService.updateUserInformation(user);
     }
-    
+
     @GetMapping(value = "/authorization/get-all")
-    public ResponseEntity<Response> getAllUser(HttpServletRequest req){
-        if(!validate.isAuthorization(req)){
+    public ResponseEntity<Response> getAllUser(HttpServletRequest req) {
+        if (!validate.isAuthorization(req)) {
             return validate.deniedResponse();
         }
         return userService.getAllUser();
     }
-    
-    @PostMapping(value ="/authorization/delete-user/{id}")
-    public ResponseEntity<Response> deleteUserById(@PathVariable int id,HttpServletRequest req){
-        if(!validate.isAuthorization(req)){
+
+    @PostMapping(value = "/authorization/delete-user/{id}")
+    public ResponseEntity<Response> deleteUserById(@PathVariable int id, HttpServletRequest req) {
+        if (!validate.isAuthorization(req)) {
             return validate.deniedResponse();
         }
         return userService.deleteUserById(id);
     }
+
     //khong update(email,password)
     @PostMapping(value = "/authorization/update-by-admin")
-    public ResponseEntity<Response> updateUserByAdmin(@RequestBody User user,HttpServletRequest req){
-        if(!validate.isAuthorization(req)){
+    public ResponseEntity<Response> updateUserByAdmin(@RequestBody User user, HttpServletRequest req) {
+        if (!validate.isAuthorization(req)) {
             return validate.deniedResponse();
+        }
+        if (!validate.isValidEmail(user.getEmail())) {
+            validate.deniedEmailResponse();
         }
         return userService.updateUserByAdmin(user);
     }
