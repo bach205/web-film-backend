@@ -81,7 +81,7 @@ public class MovieController {
     
     @GetMapping(value = "authorization/load-watchlater")
     public ResponseEntity<Response> getWatchLaterList (@RequestParam long userId,HttpServletRequest req){
-        if(!validate.isAuthorization(req)){
+        if(!validate.isLogin(req)){
             return validate.deniedResponse();
         }
         return movieService.getWatchList(userId);
@@ -89,9 +89,14 @@ public class MovieController {
     
     @PostMapping(value = "authorization/delete-watchlater")
     public ResponseEntity<Response> deleteFromWatchLaterList(@RequestBody UserAndMovie req,HttpServletRequest request){
-        if(!validate.isAuthorization(request)){
+        if(!validate.isLogin(request)){
             return validate.deniedResponse();
         }
         return movieService.deleteFromWatchLaterList(req.getUserId(), req.getMovieId());
+    }
+    
+    @GetMapping (value= "/load-statics")
+    public ResponseEntity<Response> loadGeneralStatics (){
+        return movieService.loadGeneralStatics();
     }
 }

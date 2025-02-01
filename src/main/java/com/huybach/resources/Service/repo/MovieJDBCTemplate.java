@@ -14,6 +14,7 @@ import com.huybach.resources.Service.Mapper.SearchMapper;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class MovieJDBCTemplate {
     JdbcTemplate db;
 
     public List<Movie> getTrendingMovies() {
-        String query = "select * from movies where id in (select top 12 movieId from (select movieId,sum([view]) as [view] \n"
+        String query = "select * from movies where id in (select top 12 movieId from (select movieId,sum([view]) as [view]  "
                 + "from episodes group by movieId) as countView order by [view] desc)";
         return db.query(query, new MovieMapper());
     }
@@ -66,14 +67,14 @@ public class MovieJDBCTemplate {
         });
     }
 
-    public Episode getMovieAttributeWithTotalEpisode(String movieTitle,long episode) {
+    public Episode getMovieAttributeWithTotalEpisode(String movieTitle, long episode) {
         String subQuery = "select a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL,count(b.movieId) as totalEpisode from movies a "
                 + "join episodes b on a.id = b.movieId "
                 + "where a.title = ? "
                 + "group by a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL ";
-        String query = "select sub.*,b.videoURL from (" +subQuery+ ") as sub join episodes b on b.movieId = sub.id "
+        String query = "select sub.*,b.videoURL from (" + subQuery + ") as sub join episodes b on b.movieId = sub.id "
                 + " where episode = ?";
-        return (Episode) db.queryForObject(query, new Object[]{movieTitle,episode}, new EpisodeWithoutGenreViewMapper());
+        return (Episode) db.queryForObject(query, new Object[]{movieTitle, episode}, new EpisodeWithoutGenreViewMapper());
     }
 
     public Timestamp getEpisodeVersionUpdateView(long movieId, int episode) throws Exception {
@@ -116,7 +117,7 @@ public class MovieJDBCTemplate {
         String query = "insert into watchLater values (?,?)";
         return db.update(query, new Object[]{userId, movieId});
     }
-    
+
     //lay episode nay la thieu totalView voi list genre
     public List<Episode> getWatchLaterList(long userId) {
         String subQuery = "select a.* from movies a "
@@ -127,9 +128,45 @@ public class MovieJDBCTemplate {
                 + " group by sub.id,sub.title,sub.description,sub.category,sub.releaseDate,sub.country,sub.imageURL";
         return db.query(query, new Object[]{userId}, new EpisodeMapper());
     }
-    
-    public int deleteFromWatchLaterList(long userId,long movieId){
+
+    public int deleteFromWatchLaterList(long userId, long movieId) {
         String query = "delete from watchLater where userId = ? and movieId =?";
-        return db.update(query,new Object[]{userId,movieId});
+        return db.update(query, new Object[]{userId, movieId});
+    }
+
+    public List<Episode> getTop5MostAndMinView() {
+        String query = " with  "
+                + "TopMostView as ( "
+                + "	select TOP 5 a.*,sum(b.[view]) as [view],avg(b.[view]) as totalEpisode from movies a  "
+                + "join episodes b on a.id = b.movieId "
+                + "group by a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL "
+                + "order by sum(b.[view]) desc "
+                + "), "
+                + "TopLeastView as ( "
+                + "	select TOP 5 a.*,sum(b.[view]) as [view],avg(b.[view]) as totalEpisode from movies a  "
+                + "join episodes b on a.id = b.movieId "
+                + "group by a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL "
+                + "order by sum(b.[view]) asc "
+                + ") "
+                + " "
+                + "select * from TopMostView "
+                + "union all "
+                + "select * from TopLeastView";
+        return db.query(query, new EpisodeMapper());
+    }
+
+    public List<Long> getTotalMovieAndTotalView() {
+        String query = "select count(id) as totalMovie, sum([view]) as totalView from (select a.*,sum(b.[view]) as [view],avg(b.[view]) as avgView from movies a   "
+                + "join episodes b on a.id = b.movieId  "
+                + "group by a.id,a.title,a.[description],a.category,a.releaseDate,a.country,a.imageURL) as sub";
+        List<Long> result = new ArrayList<>();
+        return db.query(query, (rs) -> {
+            if (rs.next()) {
+                result.add(rs.getLong("totalMovie"));
+                result.add(rs.getLong("totalView"));
+                return result;
+            }
+            return result;
+        });
     }
 }

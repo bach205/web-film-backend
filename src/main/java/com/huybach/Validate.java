@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Validate {
+
     private UserJDBCTemplate userDb;
     private SessionJDBCTemplate sessionDb;
 
@@ -27,17 +28,33 @@ public class Validate {
         this.userDb = userDb;
         this.sessionDb = sessionDb;
     }
-    
-    public boolean isAuthorization(HttpServletRequest req){
-        String sessionId = (String)req.getAttribute("sessionId");
-        long userId = sessionDb.getSession(sessionId).getUserId();
-        User user = userDb.getUserById(userId);
-        return user.getRole()!=0;
+
+    public boolean isAuthorization(HttpServletRequest req) {
+        try {
+            String sessionId = (String) req.getAttribute("sessionId");
+            long userId = sessionDb.getSession(sessionId).getUserId();
+            User user = userDb.getUserById(userId);
+            return user.getRole() != 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
-    
-    public ResponseEntity<Response> deniedResponse (){
-        return ResponseEntity.status(403).body(new Response(403,"what are you looking for"));
+
+    public boolean isLogin(HttpServletRequest req) {
+        try {
+            String sessionId = (String) req.getAttribute("sessionId");
+            long userId = sessionDb.getSession(sessionId).getUserId();
+            User user = userDb.getUserById(userId);
+            return user.getId() > 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
-    
-    
+
+    public ResponseEntity<Response> deniedResponse() {
+        return ResponseEntity.status(403).body(new Response(403, "what are you looking for"));
+    }
+
 }

@@ -207,4 +207,14 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500,e.getMessage()));
         }
     }
+    public ResponseEntity<Response> loadGeneralStatics(){
+        List<Object> result = new ArrayList<>();
+        try{
+            result.add(movieDb.getTop5MostAndMinView());
+            result.add(movieDb.getTotalMovieAndTotalView());
+            return ResponseEntity.status(200).body(new Response(200,"ok",result));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage(),null));
+        }
+    }
 }
