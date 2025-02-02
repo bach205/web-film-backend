@@ -58,6 +58,16 @@ public class UserService {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
+        public ResponseEntity<Response> adminCreateUser(@RequestBody User user,HttpServletResponse res) {
+        try {
+            db.createUser(user);
+            return ResponseEntity.status(200).body(new Response(200, "Create account successfully", user));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(500).body(new Response(500, "The email is existed", null));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
+        }
+    }
     
     //gui sessionid vao cookie trong response
     public void sendSessionId (HttpServletResponse res, User user){
@@ -103,10 +113,10 @@ public class UserService {
             if(result > 0 ){
                 return ResponseEntity.status(200).body(new Response(200,"delete successfully"));
             }else{
-                return ResponseEntity.status(500).body(new Response(200,"delete failed"));
+                return ResponseEntity.status(500).body(new Response(500,"delete failed"));
             }
         }catch(Exception e){
-            return ResponseEntity.status(200).body(new Response(200,e.getMessage()));
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage()));
         }
     }
     
@@ -116,10 +126,10 @@ public class UserService {
             if(result > 0 ){
                 return ResponseEntity.status(200).body(new Response(200,"update successfully"));
             }else{
-                return ResponseEntity.status(500).body(new Response(200,"update failed"));
+                return ResponseEntity.status(500).body(new Response(500,"update failed"));
             }
         }catch(Exception e){
-            return ResponseEntity.status(200).body(new Response(200,e.getMessage()));
+            return ResponseEntity.status(500).body(new Response(500,e.getMessage()));
         }
         
     }

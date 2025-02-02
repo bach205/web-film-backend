@@ -54,7 +54,7 @@ public class Validate {
     }
     
     public boolean isValidEmail(String email){
-         String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+         String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}$";
          return email.matches(regex);
     }
     
@@ -65,6 +65,15 @@ public class Validate {
     
     public ResponseEntity<Response> deniedResponse() {
         return ResponseEntity.status(403).body(new Response(403, "what are you looking for"));
+    }
+    
+    public boolean isUserDataCorrect(User user){
+        return !user.getEmail().isBlank() || !user.getFirstName().isBlank() || !user.getLastName().isBlank()
+                || !user.getPassword().isBlank();
+    }
+    
+    public ResponseEntity<Response> deniedFormatCreateUser() {
+        return ResponseEntity.status(500).body(new Response(500, "nhap tat ca cac truong tru address"));
     }
 
 }

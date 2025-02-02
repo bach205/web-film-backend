@@ -220,4 +220,9 @@ public class MovieJDBCTemplate {
         });
         return result;
     }
+    
+    public int deleteUserIdFromWatchLater(long userId){
+        String query = "delete from watchLater where userId = ?";
+        return db.update(query,new Object[]{userId});
+    }
 }

@@ -7,6 +7,7 @@ package com.huybach.resources.Controller;
 import com.huybach.Validate;
 import com.huybach.resources.Model.Response;
 import com.huybach.resources.Model.User;
+import com.huybach.resources.Service.MovieService;
 import com.huybach.resources.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +30,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
 
     private UserService userService;
+    private MovieService movieService;
     private Validate validate;
+
+    @Autowired
+    public void setMovieService(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -49,13 +56,19 @@ public class UserController {
     @PostMapping(value = "/registration")
     public ResponseEntity<Response> registerHandle(@RequestBody User user, HttpServletResponse res) {
         if (!validate.isValidEmail(user.getEmail())) {
-            validate.deniedEmailResponse();
+            return validate.deniedEmailResponse();
+        }
+        if (!validate.isUserDataCorrect(user)) {
+            return validate.deniedFormatCreateUser();
         }
         return userService.registerHandle(user, res);
     }
 
     @PostMapping(value = "/reset-password")
     public ResponseEntity<Response> resetPasswordHandle(@RequestBody User user) {
+        if(user.getPassword().isBlank()){
+            return ResponseEntity.status(500).body(new Response(500,"Password cannot be blank"));
+        }
         return userService.resetPasswordHandle(user);
     }
 
@@ -63,7 +76,7 @@ public class UserController {
     @PostMapping(value = "/update-info-except-password")
     public ResponseEntity<Response> updateInformationExceptPassword(@RequestBody User user) {
         if (!validate.isValidEmail(user.getEmail())) {
-            validate.deniedEmailResponse();
+            return validate.deniedEmailResponse();
         }
         return userService.updateUserInformation(user);
     }
@@ -77,10 +90,11 @@ public class UserController {
     }
 
     @PostMapping(value = "/authorization/delete-user/{id}")
-    public ResponseEntity<Response> deleteUserById(@PathVariable int id, HttpServletRequest req) {
+    public ResponseEntity<Response> deleteUserById(@PathVariable long id, HttpServletRequest req) {
         if (!validate.isAuthorization(req)) {
             return validate.deniedResponse();
         }
+        movieService.deleteUserFromWatchLater(id);
         return userService.deleteUserById(id);
     }
 
@@ -91,8 +105,25 @@ public class UserController {
             return validate.deniedResponse();
         }
         if (!validate.isValidEmail(user.getEmail())) {
-            validate.deniedEmailResponse();
+            return validate.deniedEmailResponse();
+        }
+        if (!validate.isUserDataCorrect(user)) {
+            return validate.deniedFormatCreateUser();
         }
         return userService.updateUserByAdmin(user);
+    }
+
+    @PostMapping(value = "/authorization/registration")
+    public ResponseEntity<Response> addNewUserWithAdminAuthorization(@RequestBody User user, HttpServletRequest req, HttpServletResponse res) {
+        if (!validate.isAuthorization(req)) {
+            return validate.deniedResponse();
+        }
+        if (!validate.isValidEmail(user.getEmail())) {
+            return validate.deniedEmailResponse();
+        }
+        if (!validate.isUserDataCorrect(user)) {
+            return validate.deniedFormatCreateUser();
+        }
+        return userService.adminCreateUser(user, res);
     }
 }

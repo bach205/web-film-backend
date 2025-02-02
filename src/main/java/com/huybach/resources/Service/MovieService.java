@@ -243,4 +243,12 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
+    public ResponseEntity<Response> deleteUserFromWatchLater(long userId){
+        try{
+            int check =movieDb.deleteUserIdFromWatchLater(userId);
+            return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
+        }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+    }
 }
