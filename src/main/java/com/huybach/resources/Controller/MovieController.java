@@ -108,12 +108,20 @@ public class MovieController {
         String title = (String)req.get(0);
         String description =(String) req.get(1);
         String category =(String) req.get(2);
-        int releaseDate = (int) req.get(3);
+        int releaseDate = req.get(3)!= null ? (int) req.get(3) : 0;
         String country = (String)req.get(4);
         String imageURL = (String)req.get(5);
-        int episode = (int)req.get(6);
+        int episode =req.get(6)!= null ? (int)req.get(6):0;
         String videoURL = (String)req.get(7);
         List<String> genreList =(List<String>) req.get(8);
         return movieService.addEpisode(title, description, category, releaseDate, country, imageURL, episode, videoURL, genreList);
+    }
+    
+    @PostMapping (value = "/authorization/remove-movie")
+    public ResponseEntity<Response> removeMovie(@RequestBody long id, HttpServletRequest request){
+        if(!validate.isAuthorization(request)){
+            return validate.deniedResponse();
+        }
+        return movieService.removeMovieById(id);
     }
 }

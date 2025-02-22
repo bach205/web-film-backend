@@ -246,8 +246,23 @@ public class MovieService {
     public ResponseEntity<Response> deleteUserFromWatchLater(long userId){
         try{
             int check =movieDb.deleteUserIdFromWatchLater(userId);
+            if(check > 0){
             return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
+            }else{
+                return ResponseEntity.status(500).body(new Response(500, "delete failed"));
+            }
         }catch(Exception e){
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+    }
+    
+    public ResponseEntity<Response> removeMovieById(long movieId){
+        try{
+            int check = movieDb.deleteMovieById(movieId);
+            return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
+            
+        }catch(Exception e){
+            System.out.println(e.getMessage());
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }

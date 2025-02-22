@@ -28,7 +28,8 @@ public class Validate {
         this.userDb = userDb;
         this.sessionDb = sessionDb;
     }
-
+    
+    //kiem tra xem user co phai la management hay 
     public boolean isAuthorization(HttpServletRequest req) {
         try {
             String sessionId = (String) req.getAttribute("sessionId");
@@ -40,7 +41,8 @@ public class Validate {
             return false;
         }
     }
-
+    
+    //kiem tra xem da login chua
     public boolean isLogin(HttpServletRequest req) {
         try {
             String sessionId = (String) req.getAttribute("sessionId");
@@ -53,25 +55,29 @@ public class Validate {
         }
     }
     
+    //check format email
     public boolean isValidEmail(String email){
          String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}$";
          return email.matches(regex);
     }
     
+    //response khi email invalid
     public ResponseEntity<Response> deniedEmailResponse() {
         return ResponseEntity.status(500).body(new Response(500, "your email is not right format"));
     }
 
-    
+    //response khi request khong hop le
     public ResponseEntity<Response> deniedResponse() {
         return ResponseEntity.status(403).body(new Response(403, "what are you looking for"));
     }
     
+    //kiem tra xem data duoc gui den co phai la rong khong
     public boolean isUserDataCorrect(User user){
         return !user.getEmail().isBlank() || !user.getFirstName().isBlank() || !user.getLastName().isBlank()
                 || !user.getPassword().isBlank();
     }
     
+    //response khi data khong hop le
     public ResponseEntity<Response> deniedFormatCreateUser() {
         return ResponseEntity.status(500).body(new Response(500, "nhap tat ca cac truong tru address"));
     }

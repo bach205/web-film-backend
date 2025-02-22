@@ -225,4 +225,13 @@ public class MovieJDBCTemplate {
         String query = "delete from watchLater where userId = ?";
         return db.update(query,new Object[]{userId});
     }
+    
+    public int deleteMovieById(long movieId){
+        String p = "delete from movies_genres where movieId = ?";
+        int a = db.update(p,new Object[]{movieId});
+        String pre = "delete from episodes where movieId = ?";
+         a = a* db.update(pre,new Object[]{movieId});
+        String query = "delete from movies where id = ?";
+        return a*db.update(query,new Object[]{movieId});
+    }
 }
