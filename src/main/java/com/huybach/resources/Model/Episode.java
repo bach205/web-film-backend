@@ -19,11 +19,16 @@ public class Episode {
     private String country;
     private String imageURL;
     private int totalEpisode;
-    private long view;
     private String videoURL;
     List<String> genre;
+    private int totalView;
+    private double rate;
+    private int rateQuantity;
+    private long episode;
+    private String status;
+    private long view;
 
-    public Episode(long movieId, String title, String description, String category, int releaseDate, String country, String imageURL, int totalEpisode, long view,String videoURL, List<String> genre) {
+    public Episode(long movieId, String title, String description, String category, int releaseDate, String country, String imageURL, int totalEpisode, String videoURL, List<String> genre, int totalView, double rate, int rateQuantity, long episode, String status, long view) {
         this.movieId = movieId;
         this.title = title;
         this.description = description;
@@ -32,10 +37,36 @@ public class Episode {
         this.country = country;
         this.imageURL = imageURL;
         this.totalEpisode = totalEpisode;
-        this.view = view;
-        this.genre = genre;
         this.videoURL = videoURL;
+        this.genre = genre;
+        this.totalView = totalView;
+        this.rate = rate;
+        this.rateQuantity = rateQuantity;
+        this.episode = episode;
+        this.status = status;
+        this.view = view;
     }
+
+    public long getView() {
+        return view;
+    }
+
+    public void setView(long view) {
+        this.view = view;
+    }
+
+    
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
+    
 
     public Episode() {
     }
@@ -48,14 +79,6 @@ public class Episode {
         this.videoURL = videoURL;
     }
 
-    
-    public long getView() {
-        return view;
-    }
-
-    public void setView(long view) {
-        this.view = view;
-    }
 
     public List<String> getGenre() {
         return genre;
@@ -131,10 +154,46 @@ public class Episode {
         this.totalEpisode = totalEpisode;
     }
 
+    public int getTotalView() {
+        return totalView;
+    }
+
+    public void setTotalView(int totalView) {
+        this.totalView = totalView;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public int getRateQuantity() {
+        return rateQuantity;
+    }
+
+    public void setRateQuantity(int rateQuantity) {
+        this.rateQuantity = rateQuantity;
+    }
+
+    public long getEpisode() {
+        return episode;
+    }
+
+    public void setEpisode(long episode) {
+        this.episode = episode;
+    }
+
     @Override
     public String toString() {
-        return "Episode{" + "movieId=" + movieId + ", title=" + title + ", description=" + description + ", category=" + category + ", releaseDate=" + releaseDate + ", country=" + country + ", imageURL=" + imageURL + ", totalEpisode=" + totalEpisode + '}';
+        return "Episode{" + "movieId=" + movieId + ", title=" + title + ", description=" + description + ", category=" + category + ", releaseDate=" + releaseDate + ", country=" + country + ", imageURL=" + imageURL + ", totalEpisode=" + totalEpisode + ", videoURL=" + videoURL + ", genre=" + genre + ", totalView=" + totalView + ", rate=" + rate + ", rateQuantity=" + rateQuantity + ", episode=" + episode + ", status=" + status + ", view=" + view + '}';
     }
+
+    
+
+   
     
     
 }

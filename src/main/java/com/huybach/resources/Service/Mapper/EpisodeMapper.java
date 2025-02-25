@@ -23,10 +23,16 @@ public class EpisodeMapper implements RowMapper{
         episode.setDescription(rs.getString("description"));
         episode.setCategory(rs.getString("category"));
         episode.setImageURL(rs.getString("imageURL"));
+        episode.setView(rs.getLong("view"));
         episode.setReleaseDate(rs.getInt("releaseDate"));
         episode.setTitle(rs.getString("title"));
         episode.setTotalEpisode(rs.getInt("totalEpisode"));
-        episode.setView(rs.getLong("view"));
+        episode.setTotalView(rs.getInt("totalView"));
+        episode.setRate(rs.getDouble("rate"));
+        episode.setRateQuantity(rs.getInt("rateQuantity"));
+        episode.setEpisode(rs.getLong("episode"));
+        episode.setStatus(rs.getString("status"));
+        episode.setVideoURL(rs.getString("videoURL"));
         return episode;
     }
     

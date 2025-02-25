@@ -4,9 +4,11 @@
  */
 package com.huybach.resources.Service;
 
+import com.huybach.Validate;
 import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.Response;
+import com.huybach.resources.Model.User;
 import com.huybach.resources.Service.repo.MovieJDBCTemplate;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -33,6 +35,7 @@ public class MovieService {
         this.movieDb = movieDb;
     }
 
+    //1.0
     public ResponseEntity<Response> getTrendingMovies() {
         try {
             List<Movie> result = movieDb.getTrendingMovies();
@@ -42,6 +45,26 @@ public class MovieService {
         }
     }
 
+    public ResponseEntity<Response> getAllMoviesSortByCriterion(String criterion, String direction) {
+        try {
+            List<Movie> result = movieDb.getAllMovieSortByCriterion(criterion, direction);
+            
+            if (!result.isEmpty()) {
+                for(Movie movie :result){
+                    movie.setGenre(movieDb.getMovieGenre(movie.getTitle()));
+                }
+                return ResponseEntity.status(200).body(new Response(200, "Get success", result));
+            } else {
+                return ResponseEntity.status(404).body(new Response(404, "Database haven't had any movie yet"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new Response(500, "Get failed"));
+        }
+
+    }
+
+    //1.0
     public ResponseEntity<Response> getLatestMoviesByCategory(String category) {
         try {
             List<Movie> result = movieDb.getLatestMoviesByCategory(category);
@@ -51,13 +74,14 @@ public class MovieService {
         }
     }
 
+    //1.0
     public ResponseEntity<Response> loadHomePage() {
         try {
             List<Movie> trending = movieDb.getTrendingMovies();
             List<Movie> latestBo = movieDb.getLatestMoviesByCategory("Phim bộ");
             List<Movie> latestLe = movieDb.getLatestMoviesByCategory("Phim lẻ");
             String extraQuery = " where c.name = N'Anime' ";
-            List<Episode> anime = movieDb.searchMovie(extraQuery);
+            List<Episode> anime = movieDb.searchMovie(extraQuery, "");
             List<Object> result = new ArrayList<>();
             result.add(trending);
             result.add(latestBo);
@@ -70,56 +94,45 @@ public class MovieService {
 
     }
 
+    //fix 1.0
     public ResponseEntity<Response> getEpisodeData(String movieTitle, long episode) {
         Episode result;
         try {
-            result = movieDb.getMovieAttributeWithTotalEpisode(movieTitle, episode);
+            result = movieDb.getEpisode(movieTitle, episode);
             List<String> genre = movieDb.getMovieGenre(movieTitle);
+            result.setGenre(genre);
             String genreQuery = "";
             for (String string : genre) {
                 genreQuery += "N'" + string + "',";
             }
             genreQuery = genreQuery.substring(0, genreQuery.length() - 1);
-            long episodeView = movieDb.getEpisodeView(movieTitle, episode);
             List<Movie> trending = movieDb.getTrendingMovies();
             List<Movie> relativeMovie = movieDb.getMovieByRelativeGenre(genreQuery);
-            if (episodeView == -1) {
-                return ResponseEntity.status(500).body(new Response(500, "sai trong cau lenh sql lay view", null));
-            }
             List<Object> listResult = new ArrayList<>();
             listResult.add(trending);
             listResult.add(relativeMovie);
-            result.setGenre(genre);
-            result.setView(episodeView);
             return ResponseEntity.status(200).body(new Response(200, "load successfully", result, listResult));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
 
+    //fix 1.0
     public ResponseEntity<Response> updateEpisodeView(long movieId, int episode) {
-        Timestamp version = null;
         try {
-
-            int retry = 0;
-            while (retry < 5) {
-                version = movieDb.getEpisodeVersionUpdateView(movieId, episode);
-                int result = movieDb.updateEpisodeView(movieId, episode, version);
-                if (result == 1) {
-                    return ResponseEntity.status(200).body(new Response(200, "ok", null));
-                } else {
-                    Thread.sleep(100);
-                    retry += 1;
-                }
+            int result = movieDb.updateEpisodeView(movieId, episode);
+            if (result > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "ok", null));
+            } else {
+                return ResponseEntity.status(500).body(new Response(500, "failed"));
             }
-            throw new Exception("qua tai server roi.......");
-
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new Response(500, e.getMessage(), version));
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
 
-    public ResponseEntity<Response> searchMovie(String title, String genre, String country, int releaseDate, String category) {
+    //fixed 1.0 
+    public ResponseEntity<Response> searchMovie(String title, String genre, String country, int releaseDate, String category, String sort, String direction) {
         //a: movies
         //b: bang trung gian movies_genres
         //c:genres
@@ -129,6 +142,10 @@ public class MovieService {
         String extraCountry = "";
         String extraReleaseDate = "";
         String extraCategory = "";
+        String sortQuery = "";
+        if (!sort.isBlank() && !direction.isBlank()) {
+            sortQuery += "order by " + sort + " " + direction;
+        }
         if (!title.isBlank()) {
             String[] splitTitle = title.split("\\s+");
             for (String word : splitTitle) {
@@ -176,7 +193,7 @@ public class MovieService {
             extraQuery = " where " + extraQuery;
         }
         try {
-            List<Episode> result = movieDb.searchMovie(extraQuery);
+            List<Episode> result = movieDb.searchMovie(extraQuery, sortQuery);
             return ResponseEntity.status(200).body(new Response(200, "search successfully", result));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
@@ -184,6 +201,7 @@ public class MovieService {
 
     }
 
+    //1.0
     public ResponseEntity<Response> addToWatchLater(long userId, long movieId) {
         try {
             movieDb.addInWatchLater(userId, movieId);
@@ -205,6 +223,7 @@ public class MovieService {
         }
     }
 
+    //1.0
     public ResponseEntity<Response> deleteFromWatchLaterList(long userId, long movieId) {
         try {
             movieDb.deleteFromWatchLaterList(userId, movieId);
@@ -214,17 +233,18 @@ public class MovieService {
         }
     }
 
-    public ResponseEntity<Response> loadGeneralStatics() {
+    //1.0
+    public ResponseEntity<Response> getMostViewByDuration(String criterion) {
         List<Object> result = new ArrayList<>();
         try {
-            result.add(movieDb.getTop5MostAndMinView());
-            result.add(movieDb.getTotalMovieAndTotalView());
+            result.add(movieDb.getMostViewByDuration(criterion));
             return ResponseEntity.status(200).body(new Response(200, "ok", result));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage(), null));
         }
     }
 
+    //error need rewrite
     public ResponseEntity<Response> addEpisode(String title, String description, String category, int releaseDate, String country, String imageURL, int episode, String videoURL, List<String> genreList) {
         long movieId = -1;
         try {
@@ -243,27 +263,96 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
-    public ResponseEntity<Response> deleteUserFromWatchLater(long userId){
-        try{
-            int check =movieDb.deleteUserIdFromWatchLater(userId);
-            if(check > 0){
-            return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
-            }else{
+
+    //1.0
+    public ResponseEntity<Response> deleteUserFromWatchLater(long userId) {
+        try {
+            int check = movieDb.deleteUserIdFromWatchLater(userId);
+            if (check > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
+            } else {
                 return ResponseEntity.status(500).body(new Response(500, "delete failed"));
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
         }
     }
-    
-    public ResponseEntity<Response> removeMovieById(long movieId){
-        try{
-            int check = movieDb.deleteMovieById(movieId);
-            return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
-            
-        }catch(Exception e){
+
+    public ResponseEntity<Response> createMovie(Movie movie, User user) {
+        if (user.getRole() == 0) {
+            return ResponseEntity.status(500).body(new Response(500, "what are you looking for?"));
+        }
+        try {
+            int check = 0;
+            if (user.getRole() == 1) {
+                check = movieDb.managerCreateMovie(movie, "allowed");
+                check += movieDb.adminCreateMovie(movie);
+            } else if (user.getRole() == 2) {
+                check = movieDb.managerCreateMovie(movie,"pending");
+            }
+            if (check > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "create successfully"));
+            } else {
+                return ResponseEntity.status(500).body(new Response(500, "create failed"));
+            }
+
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+
+    }
+
+    //fix 1.0
+    public ResponseEntity<Response> removeMovieById(long movieId, User user) {
+        if (user.getRole() == 0) {
+            return ResponseEntity.status(500).body(new Response(500, "what are you looking for?"));
+        }
+        Movie movie = movieDb.getMovieWithoutGenre(movieId);
+        movie.setGenre(movieDb.getMovieGenre(movie.getTitle()));
+        try {
+            int check = 0;
+            if (user.getRole() == 1) {
+                check = movieDb.managerDeleteMovie(movie, "allowed");
+                check += movieDb.adminDeleteMovieById(movieId);
+            } else if (user.getRole() == 2) {
+
+                check = movieDb.managerDeleteMovie(movie, "pending");
+            }
+            if (check > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "delete successfully"));
+            } else {
+                return ResponseEntity.status(500).body(new Response(500, "delete failed"));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+    }
+
+    //fix 1.0
+    public ResponseEntity<Response> updateMovie(Movie movie, User user) {
+        if (user.getRole() == 0) {
+            return ResponseEntity.status(500).body(new Response(500, "what are you looking for?"));
+        }
+        try {
+            int check = 0;
+            if (user.getRole() == 1) {
+                check = movieDb.managerUpdateMovie(movie, "allowed");
+                check += movieDb.adminUpdateMovie(movie);
+                
+            } else if (user.getRole() == 2) {
+                check = movieDb.managerUpdateMovie(movie, "pending");
+            }
+            if (check > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "update successfully"));
+            } else {
+                return ResponseEntity.status(500).body(new Response(500, "update failed"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new Response(500, "update failed"));
         }
     }
 }

@@ -28,6 +28,24 @@ public class SessionService {
     @Autowired
     UserJDBCTemplate userDb;
 
+    public User getUser(HttpServletRequest request){
+        String sessionId = (String) request.getAttribute("sessionId");
+        try {
+            if (sessionId != null) {
+                Session session = db.getSession(sessionId);
+                return userDb.getUserById(session.getUserId());
+            } else {
+                return null;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println(e.getMessage());
+            return null;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
     public ResponseEntity<Response> getUserData(HttpServletRequest req) {
         String sessionId = (String) req.getAttribute("sessionId");
         try {
@@ -59,4 +77,5 @@ public class SessionService {
         
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+    
 }
