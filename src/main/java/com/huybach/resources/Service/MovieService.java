@@ -48,9 +48,9 @@ public class MovieService {
     public ResponseEntity<Response> getAllMoviesSortByCriterion(String criterion, String direction) {
         try {
             List<Movie> result = movieDb.getAllMovieSortByCriterion(criterion, direction);
-            
+
             if (!result.isEmpty()) {
-                for(Movie movie :result){
+                for (Movie movie : result) {
                     movie.setGenre(movieDb.getMovieGenre(movie.getTitle()));
                 }
                 return ResponseEntity.status(200).body(new Response(200, "Get success", result));
@@ -285,10 +285,12 @@ public class MovieService {
         try {
             int check = 0;
             if (user.getRole() == 1) {
-                check = movieDb.managerCreateMovie(movie, "allowed");
-                check += movieDb.adminCreateMovie(movie);
+                check = movieDb.adminCreateMovie(movie);
+                Long id = movieDb.getMovieIdByTitle(movie.getTitle());
+                List<Integer> genreList = movieDb.getGenreId(movie.getGenre());
+                movieDb.addMovieGenre(genreList, id);
             } else if (user.getRole() == 2) {
-                check = movieDb.managerCreateMovie(movie,"pending");
+                check = movieDb.managerCreateMovie(movie, "pending");
             }
             if (check > 0) {
                 return ResponseEntity.status(200).body(new Response(200, "create successfully"));
@@ -309,12 +311,12 @@ public class MovieService {
             return ResponseEntity.status(500).body(new Response(500, "what are you looking for?"));
         }
         Movie movie = movieDb.getMovieWithoutGenre(movieId);
-        movie.setGenre(movieDb.getMovieGenre(movie.getTitle()));
+        movie.setGenre(movieDb.getMovieManagementGenre(movie.getTitle()));
+
         try {
             int check = 0;
             if (user.getRole() == 1) {
-                check = movieDb.managerDeleteMovie(movie, "allowed");
-                check += movieDb.adminDeleteMovieById(movieId);
+                check = movieDb.adminDeleteMovieById(movieId);
             } else if (user.getRole() == 2) {
 
                 check = movieDb.managerDeleteMovie(movie, "pending");
@@ -339,9 +341,8 @@ public class MovieService {
         try {
             int check = 0;
             if (user.getRole() == 1) {
-                check = movieDb.managerUpdateMovie(movie, "allowed");
-                check += movieDb.adminUpdateMovie(movie);
-                
+                check = movieDb.adminUpdateMovie(movie);
+
             } else if (user.getRole() == 2) {
                 check = movieDb.managerUpdateMovie(movie, "pending");
             }
@@ -354,5 +355,45 @@ public class MovieService {
             System.out.println(e.getMessage());
             return ResponseEntity.status(500).body(new Response(500, "update failed"));
         }
+    }
+
+    public ResponseEntity<Response> createEpisode(long movieId, long episode, String videoURL, User user) {
+        if (user.getRole() == 0) {
+            return ResponseEntity.status(500).body(new Response(500, "what are you looking for?"));
+        }
+        try {
+            int check = 0;
+            if (user.getRole() == 1) {
+                movieDb.addEpisode(movieId, episode, videoURL);
+            } else if (user.getRole() == 2) {
+
+            }
+            if (check > 0) {
+                return ResponseEntity.status(200).body(new Response(200, "create successfully"));
+            } else {
+                return ResponseEntity.status(500).body(new Response(500, "create failed"));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+
+    }
+
+    public ResponseEntity<Response> getCategoryViewStatics() {
+        List<List<Integer>> result = new ArrayList<>();
+        try {
+            System.out.println(movieDb.getEachCategoryStatics("Phim bộ").size());
+            result.add(movieDb.getEachCategoryStatics("Phim Bộ"));
+            result.add(movieDb.getEachCategoryStatics("Phim Lẻ"));
+            result.add(movieDb.getAllCategoryStatics());
+            result.add(movieDb.getTotalView());
+            return ResponseEntity.status(200).body(new Response(200, "create successfully", result));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(500).body(new Response(500, e.getMessage()));
+        }
+
     }
 }

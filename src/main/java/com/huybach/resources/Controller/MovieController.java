@@ -5,6 +5,7 @@
 package com.huybach.resources.Controller;
 
 import com.huybach.Validate;
+import com.huybach.resources.Model.Episode;
 import com.huybach.resources.Model.Movie;
 import com.huybach.resources.Model.MovieIdAndEpisode;
 import com.huybach.resources.Model.Response;
@@ -142,8 +143,7 @@ public class MovieController {
         int releaseDate = req.get(3)!= null ? (int) req.get(3) : 0;
         String country = (String)req.get(4);
         String imageURL = (String)req.get(5);
-        List<String> genreList =(List<String>) req.get(8);
-        
+        List<String> genreList =(List<String>) req.get(6);
         if(!validate.CheckMovieData(title, description, category, releaseDate, country, imageURL, genreList)){
             return validate.responseEmptyInput();
         }
@@ -182,5 +182,29 @@ public class MovieController {
             return validate.deniedResponse();
         }
         return movieService.updateMovie(movie,user);
+    }
+    @PostMapping (value = "/authorization/add-episode")
+    public ResponseEntity<Response> addEpisode(@RequestBody Episode ep, HttpServletRequest request){
+        if(!validate.isAuthorization(request)){
+            return validate.deniedResponse();
+        }
+        long id = ep.getMovieId();
+        long episode =ep.getEpisode();
+        String videoURL =ep.getVideoURL();
+        if(id<=0 || episode <= 0 || videoURL.isBlank()){
+            return validate.responseEmptyInput();
+        }
+        User user = sessionService.getUser(request);
+        if(user == null){
+            return validate.deniedResponse();
+        }
+        return movieService.createEpisode(id, episode, videoURL, user);
+    }
+    @GetMapping (value = "/authorization/statics")
+    public ResponseEntity<Response> getStatics(HttpServletRequest request){
+        if(!validate.isAuthorization(request)){
+            return validate.deniedResponse();
+        }
+        return movieService.getCategoryViewStatics();
     }
 }
